@@ -1,10 +1,11 @@
 use r2d2::Pool;
 use std::time::Duration;
-use redis;
+use redis::{self, cluster::ClusterClient, IntoConnectionInfo};
 
 #[derive(Default, Debug)]
 struct RedisConf {
     dsn: String,
+    cluster_nodes: Vec<String>,
     max_size:u32,
     min_idle: u32,
     max_lifetime: Duration,
@@ -13,15 +14,25 @@ struct RedisConf {
 }
 
 impl RedisConf{
-    fn new(dsn: &str) ->Self{
+    fn new() ->Self{
         Self{
-            dsn: dsn.to_string(),
             max_size:20,
             min_idle:3,
             max_lifetime: Duration::from_secs(1800),
             idle_timeout: Duration::from_secs(300),
             connection_timeout: Duration::from_secs(10),
+            ..Default::default()
         }
+    }
+
+    pub fn with_dsn(mut self,dsn:&str) -> Self{
+        self.dsn = dsn.to_string();
+        self
+    }
+
+    pub fn with_cluster_nodes(mut self,nodes: Vec<String>) -> Self{
+        self.cluster_nodes = nodes;
+        self
     }
 
     pub fn with_max_size(mut self, max: u32) -> Self {
@@ -61,6 +72,28 @@ impl RedisConf{
             .unwrap();
         pool
     }
+
+    fn init_cluster_pool(&self) ->Pool<ClusterClient>{
+        if self.cluster_nodes.is_empty(){
+            panic!("cluster nodes is empty");
+        }
+
+        let mut nodes = Vec::new();
+        for node in self.cluster_nodes.iter() {
+            nodes.push(node.as_str())
+        }
+
+        let client = ClusterClient::open(nodes).unwrap();
+        let pool: Pool<ClusterClient> = Pool::builder()
+            .max_size(self.max_size)
+            .max_lifetime(Some(self.max_lifetime))
+            .idle_timeout(Some(self.idle_timeout))
+            .min_idle(Some(self.min_idle))
+            .connection_timeout(self.connection_timeout)
+            .build(client)
+            .unwrap();
+        pool
+    }
 }
 
 #[cfg(test)]
@@ -71,11 +104,25 @@ mod tests {
     #[test]
     fn test_redis() {
         let dsn = "redis://:@127.0.0.1:6379/0";
-        let pool = RedisConf::new(dsn).init_pool();
+        let pool = RedisConf::new().with_dsn(dsn).init_pool();
         let mut conn = pool.get().unwrap(); // 默认超时是 connection_timeout 参数
 
         // 设置单个pool timeout
         // let mut conn = pool.get_timeout(Duration::from_secs(2)).unwrap();
+        let res: redis::RedisResult<String> = conn.set("my_user", "daheige");
+        if res.is_err() {
+            println!("redis set error:{}", res.err().unwrap().to_string());
+        }else{
+            println!("set success");
+        }
+    }
+
+    #[test]
+    fn test_redis_cluster() {
+        let dsn = "redis://:@127.0.0.1:6379/0";
+        let pool = RedisConf::new().with_cluster_nodes(vec![dsn.to_string()]).init_cluster_pool();
+        let mut conn = pool.get().unwrap();
+
         let res: redis::RedisResult<String> = conn.set("my_user", "daheige");
         if res.is_err() {
             println!("redis set error:{}", res.err().unwrap().to_string());
