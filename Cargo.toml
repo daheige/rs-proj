@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "web",
+    "rpc",
+    "worker",
+    "config",
+    "infras",
+]
