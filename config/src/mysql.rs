@@ -5,6 +5,7 @@ use std::time::Duration;
 // mysql 配置信息
 #[derive(Default, Debug)]
 pub struct MysqlConf<'a> {
+    // 结构体中包含引用类型的字段，如果编译器无法推断生命周期，需要手动标注
     dsn: &'a str,              // dsn &str 引用类型
     max_connections: u32,      // 最大连接数，默认100个
     min_connections: u32,      // 最小连接数，默认10个
