@@ -4,24 +4,24 @@ use std::time::Duration;
 
 // mysql 配置信息
 #[derive(Default, Debug)]
-pub struct MysqlConf {
-    pub dsn: String,               // dsn
-    pub max_connections: u32,      // 最大连接数，默认100个
-    pub min_connections: u32,      // 最小连接数，默认10个
-    pub max_lifetime: Duration,    // 最大生命周期，默认1800s
-    pub idle_timeout: Duration,    // 空闲连接的生命周期，默认600s
-    pub connect_timeout: Duration, // 连接超时,默认10s
+pub struct MysqlConf<'a> {
+    dsn: &'a str,              // dsn &str 引用类型
+    max_connections: u32,      // 最大连接数，默认100个
+    min_connections: u32,      // 最小连接数，默认10个
+    max_lifetime: Duration,    // 最大生命周期，默认1800s
+    idle_timeout: Duration,    // 空闲连接的生命周期，默认600s
+    connect_timeout: Duration, // 连接超时,默认10s
 }
 
-impl MysqlConf {
-    pub fn new(dsn: &str) -> Self {
+impl<'a> MysqlConf<'a> {
+    pub fn new(dsn: &'a str) -> Self {
         if dsn.is_empty() {
             panic!("mysql dsn is empty");
         }
 
         Self {
-            dsn: dsn.to_string(),
-            max_connections:100,
+            dsn: dsn,
+            max_connections: 100,
             min_connections: 10,
             max_lifetime: Duration::from_secs(1800),
             idle_timeout: Duration::from_secs(600),
@@ -120,8 +120,10 @@ mod tests {
             };
 
             // println!("stu = {:?}", stu);
-            println!("id: {},name: {} age: {} id_card: {} last_update: {}",
-                     stu.id,stu.name,stu.age,stu.id_card,stu.last_update);
+            println!(
+                "id: {},name: {} age: {} id_card: {} last_update: {}",
+                stu.id, stu.name, stu.age, stu.id_card, stu.last_update
+            );
         }
 
         Ok(())
