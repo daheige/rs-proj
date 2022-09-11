@@ -21,7 +21,7 @@ impl<'a> MysqlConf<'a> {
         }
 
         Self {
-            dsn: dsn,
+            dsn,
             max_connections: 100,
             min_connections: 10,
             max_lifetime: Duration::from_secs(1800),

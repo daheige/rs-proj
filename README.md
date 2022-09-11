@@ -1,2 +1,2 @@
 # rs-proj
-rust api/job/grpc project layout with ddd.
+    rust web/job/grpc project layout
