@@ -24,11 +24,9 @@ impl ConfigTrait for Config {
     }
 
     fn load(&mut self) -> Result<(), Error> {
-        let mut s = String::new();
         File::open(&self.config_file)
             .unwrap()
-            .read_to_string(&mut s)?;
-        self.sections = s;
+            .read_to_string(&mut self.sections)?;
         Ok(())
     }
 
