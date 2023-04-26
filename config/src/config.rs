@@ -10,7 +10,7 @@ pub trait ConfigTrait {
     fn content(&self) -> &str;
 }
 
-struct Config {
+pub struct Config {
     config_file: String,
     sections: String,
 }
