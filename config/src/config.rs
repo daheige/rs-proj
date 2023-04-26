@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use serde_yaml::{self, Value};
 use std::fs::File;
 use std::io::{Error, Read};
@@ -45,6 +44,8 @@ impl ConfigTrait for Config {
 
 #[test]
 fn test_config() {
+    use serde::{Deserialize, Serialize};
+
     #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
     struct AppConfig {
         app_debug: bool,
