@@ -16,9 +16,9 @@ struct Config {
 }
 
 impl ConfigTrait for Config {
-    fn new(config_file: &str) -> Self {
+    fn new(path: &str) -> Self {
         let s = Config {
-            config_file: config_file.to_string(),
+            config_file: path.to_string(),
             sections: String::new(),
         };
         s
