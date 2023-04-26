@@ -1,8 +1,23 @@
 [workspace]
-members = [
-    "web",
-    "rpc",
-    "worker",
+members =[
+    "modules/api",
+    "modules/job",
+    "modules/rpc",
     "config",
-    "infras",
+    "infras"
 ]
+
+resolver = "2"
+
+[profile.release]
+opt-level = 3
+
+[workspace.package]
+authors =["https://github.com/daheige"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "rust project layout"
+homepage = "https://github.com/daheige/rs-proj"
+repository = "https://github.com/daheige/rs-proj"
+readme = "README.md"
+

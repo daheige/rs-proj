@@ -1,11 +1,14 @@
-pub mod bootstrap;
-pub mod redis;
-pub mod mysql;
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn it_works() {
-        println!("ok");
+        let result = add(2, 2);
+        assert_eq!(result, 4);
     }
 }

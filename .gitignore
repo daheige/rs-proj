@@ -13,3 +13,8 @@ target/*
 .idea/*
 .DS_Store
 .vscode
+
+
+# Added by cargo
+
+/target
